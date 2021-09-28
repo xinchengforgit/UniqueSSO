@@ -35,7 +35,6 @@ export default class EmailPassword extends Vue {
     email: "",
     password: "",
   };
-
   private client = new RestClient("http://localhost:5000");
 
   public set form(f: EmailForm) {

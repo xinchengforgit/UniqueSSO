@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <img alt="UniqueStudio logo" class="logo" src="../assets/logo.jpg" />
-    <h1>UniqueStuio SSO System</h1>
+    <h1>UniqueStudio SSO System</h1>
     <el-row justify="center">
       <el-col
         :xs="{ span: 20 }"

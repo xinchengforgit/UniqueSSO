@@ -1,6 +1,6 @@
-export class LoginType {
-  static Email = "email";
-  static Phone = "phone";
-  static SMS = "sms";
-  static LarkOauth = "lark";
-}
+export default {
+  Email: "email",
+  Phone: "phone",
+  SMS: "sms",
+  LarkOauth: "lark",
+};
