@@ -1,6 +1,6 @@
 export default {
-  Email: "email",
-  Phone: "phone",
-  SMS: "sms",
-  LarkOauth: "lark",
+  Email: Symbol("email"),
+  Phone: Symbol("Phone"),
+  SMS: Symbol("SMS"),
+  LarkOauth: Symbol("lark"),
 };

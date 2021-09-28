@@ -10,13 +10,11 @@ import mail from '@material-ui/icons/Mail'
 import phone from '@material-ui/icons/Phone'
 import sms from '@material-ui/icons/Sms'
 import oauth from '@material-ui/icons/Vpnkey'
-import font from '../font/DutchTulips.woff2'
+import font from '../font/ScheherazadeNewBold.woff2'
 import loginType from '../constant/loginType'
 import loginText from '../constant/loginText'
 
-interface AppProps {}
-
-const useStyles = makeStyles((theme ?: any) => ({
+const useStyles = makeStyles(() => ({
   root: {
     background: color.buttonColor,
     border: 0,
@@ -34,7 +32,7 @@ const useStyles = makeStyles((theme ?: any) => ({
 }));
 
 
-const Login : FunctionComponent<AppProps> = () => {
+const Login : FunctionComponent<unknown> = () => {
   return <Main id='Container'>
     <Global styles={css`
       body{
@@ -46,7 +44,7 @@ const Login : FunctionComponent<AppProps> = () => {
       }
     `}/>
     <Logo src={logo} />
-    <LoginForm></LoginForm>
+    <LoginForm />
   </Main>
 }
 
@@ -67,13 +65,13 @@ const Logo = styled.img`
   min-width: 150px;
 `
 
-const LoginForm : FunctionComponent<AppProps> = () => {
+const LoginForm : FunctionComponent<unknown> = () => {
   const [login, setLogin] = useState(loginType.Phone);
   const classes = useStyles()
   const text = loginText[login];
-  const loginForm = text.map( item => <LoginInputArea label={item} variant={'standard'}></LoginInputArea>)
+  const loginForm = text.map( item => <LoginInputArea key={item} label={item} variant={'standard'}></LoginInputArea>)
   return <FormLayout>
-    <LoginText>Login</LoginText>
+    <LoginText>LOGIN</LoginText>
     {loginForm}
     <LoginSubmitButton className={classes.root} variant="text">Submit!</LoginSubmitButton>
     <LoginSwitch>
