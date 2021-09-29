@@ -4,5 +4,5 @@ export default {
   [loginType.Email]: ["Address", "Password", "oauth"],
   [loginType.Phone]: ["Number", "Password"],
   [loginType.SMS]: ["Number", "AuthCode"],
-  [loginType.LarkOauth]: ["Unknown", "Unknown"],
+  [loginType.LarkOauth]: ["Unknown1", "Unknown2"],
 };
