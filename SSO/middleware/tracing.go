@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"strings"
-	"unique/jedi/util"
+	"github.com/UniqueStudio/UniqueSSO/util"
 
 	"github.com/gin-gonic/gin"
 	"github.com/xylonx/zapx"

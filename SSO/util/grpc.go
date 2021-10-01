@@ -1,8 +1,8 @@
 package util
 
 import (
-	"unique/jedi/conf"
-	"unique/jedi/pb/sms"
+	"github.com/UniqueStudio/UniqueSSO/conf"
+	"github.com/UniqueStudio/UniqueSSO/pb/sms"
 
 	"github.com/xylonx/zapx"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"

@@ -1,8 +1,8 @@
 package pkg
 
 import (
-	"unique/jedi/common"
-	"unique/jedi/database"
+	"github.com/UniqueStudio/UniqueSSO/common"
+	"github.com/UniqueStudio/UniqueSSO/database"
 )
 
 type CommonResponse struct {

@@ -2,7 +2,7 @@ package database
 
 import (
 	"time"
-	"unique/jedi/common"
+	"github.com/UniqueStudio/UniqueSSO/common"
 
 	"gorm.io/gorm"
 )

@@ -3,10 +3,11 @@ package util
 import (
 	"context"
 	"time"
-	uniquec "unique/jedi/common"
-	"unique/jedi/database"
-	"unique/jedi/pb/sms"
-	"unique/jedi/pkg"
+
+	uniquec "github.com/UniqueStudio/UniqueSSO/common"
+	"github.com/UniqueStudio/UniqueSSO/database"
+	"github.com/UniqueStudio/UniqueSSO/pb/sms"
+	"github.com/UniqueStudio/UniqueSSO/pkg"
 )
 
 func GenerateSMSCode(ctx context.Context, phone string) (string, error) {
@@ -29,7 +30,6 @@ func GetSMSCodeByPhone(ctx context.Context, phone string) (code string, err erro
 	return
 }
 
-// TODO: send sms by using Open-Platform
 func SendSMS(ctx context.Context, phone string, code string, expire time.Duration) (*[]pkg.FailedSmsStatus, error) {
 	resp, err := OpenClient.PushSMS(ctx, &sms.PushSMSRequest{})
 	if err != nil {

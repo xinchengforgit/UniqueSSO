@@ -3,8 +3,9 @@ package service
 import (
 	"context"
 	"time"
-	"unique/jedi/conf"
-	"unique/jedi/util"
+
+	"github.com/UniqueStudio/UniqueSSO/conf"
+	"github.com/UniqueStudio/UniqueSSO/util"
 
 	"github.com/sirupsen/logrus"
 )

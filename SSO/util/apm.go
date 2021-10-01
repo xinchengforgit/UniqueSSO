@@ -2,7 +2,8 @@ package util
 
 import (
 	"context"
-	"unique/jedi/conf"
+
+	"github.com/UniqueStudio/UniqueSSO/conf"
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"

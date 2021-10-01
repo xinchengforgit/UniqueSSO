@@ -4,11 +4,12 @@ import (
 	"context"
 	"errors"
 	"net/url"
-	"unique/jedi/common"
-	"unique/jedi/conf"
-	"unique/jedi/database"
-	"unique/jedi/pkg"
-	"unique/jedi/util"
+
+	"github.com/UniqueStudio/UniqueSSO/common"
+	"github.com/UniqueStudio/UniqueSSO/conf"
+	"github.com/UniqueStudio/UniqueSSO/database"
+	"github.com/UniqueStudio/UniqueSSO/pkg"
+	"github.com/UniqueStudio/UniqueSSO/util"
 
 	"github.com/sirupsen/logrus"
 )

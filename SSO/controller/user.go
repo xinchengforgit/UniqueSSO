@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"net/url"
 	"time"
-	"unique/jedi/common"
-	"unique/jedi/conf"
-	"unique/jedi/pkg"
-	"unique/jedi/service"
-	"unique/jedi/util"
+	"github.com/UniqueStudio/UniqueSSO/common"
+	"github.com/UniqueStudio/UniqueSSO/conf"
+	"github.com/UniqueStudio/UniqueSSO/pkg"
+	"github.com/UniqueStudio/UniqueSSO/service"
+	"github.com/UniqueStudio/UniqueSSO/util"
 
 	"github.com/gin-gonic/gin"
 	"github.com/xylonx/zapx"
@@ -26,6 +26,7 @@ import (
     {
         "phone": "",
         "password": ""
+		"totp_token": ""
     }
 
 2. phone sms

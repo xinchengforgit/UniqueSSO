@@ -3,8 +3,8 @@ package controller
 import (
 	"errors"
 	"net/http"
-	"unique/jedi/pkg"
-	"unique/jedi/service"
+	"github.com/UniqueStudio/UniqueSSO/pkg"
+	"github.com/UniqueStudio/UniqueSSO/service"
 
 	"github.com/gin-gonic/gin"
 )

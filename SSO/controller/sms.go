@@ -3,9 +3,9 @@ package controller
 import (
 	"errors"
 	"net/http"
-	"unique/jedi/common"
-	"unique/jedi/pkg"
-	"unique/jedi/util"
+	"github.com/UniqueStudio/UniqueSSO/common"
+	"github.com/UniqueStudio/UniqueSSO/pkg"
+	"github.com/UniqueStudio/UniqueSSO/util"
 
 	"github.com/gin-gonic/gin"
 	"github.com/xylonx/zapx"

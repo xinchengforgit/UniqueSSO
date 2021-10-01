@@ -4,8 +4,9 @@ import (
 	"context"
 	"errors"
 	"time"
-	"unique/jedi/conf"
-	"unique/jedi/database"
+
+	"github.com/UniqueStudio/UniqueSSO/conf"
+	"github.com/UniqueStudio/UniqueSSO/database"
 )
 
 func StoreValue(ctx context.Context, key, value string, expires time.Duration) error {

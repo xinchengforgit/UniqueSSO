@@ -2,7 +2,8 @@ package main
 
 import (
 	"log"
-	"unique/jedi/cmd"
+
+	"github.com/UniqueStudio/UniqueSSO/cmd"
 )
 
 func main() {

@@ -7,6 +7,7 @@ const (
 	SignTypePhoneSms      = "sms"
 	SignTypeEmailPassword = "email"
 	SignTypeWechat        = "wechat"
+	SignTypeLark          = "lark"
 )
 
 const (

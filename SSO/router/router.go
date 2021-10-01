@@ -1,8 +1,8 @@
 package router
 
 import (
-	"unique/jedi/controller"
-	"unique/jedi/middleware"
+	"github.com/UniqueStudio/UniqueSSO/controller"
+	"github.com/UniqueStudio/UniqueSSO/middleware"
 
 	"github.com/gin-gonic/gin"
 )

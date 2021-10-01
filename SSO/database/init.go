@@ -3,7 +3,7 @@ package database
 import (
 	"context"
 	"time"
-	"unique/jedi/conf"
+	"github.com/UniqueStudio/UniqueSSO/conf"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/xylonx/zapx"

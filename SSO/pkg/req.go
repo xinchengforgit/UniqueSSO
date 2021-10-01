@@ -9,6 +9,7 @@ type LoginUser struct {
 	Phone     string `json:"phone,omitempty"`
 	Email     string `json:"email,omitempty"`
 	Password  string `json:"password,omitempty"`
+	TOTPToken string `json:"totp_token,omitempty"`
 	Code      string `json:"code,omitempty"`
 	QrcodeSrc string `json:"qrcode_src"`
 }

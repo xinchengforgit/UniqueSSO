@@ -1,4 +1,4 @@
-module unique/jedi
+module github.com/UniqueStudio/UniqueSSO
 
 go 1.17
 
