@@ -16,6 +16,7 @@ import (
 
 func SendSmsCode(ctx *gin.Context) {
 	apmCtx, span := util.Tracer.Start(ctx.Request.Context(), "SendSMSCode")
+	//忽视第一行
 	defer span.End()
 
 	login := new(pkg.LoginUser)

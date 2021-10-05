@@ -59,6 +59,8 @@ func GetAccessToken(ctx context.Context, corpid, corpsecret string) (string, err
 	return data.AccessToken, nil
 }
 
+//获取QRCodeSrc
+
 func GetQRCodeSrc() (string, error) {
 	qrimg := ""
 	collector := colly.NewCollector()
@@ -136,3 +138,10 @@ func FetchWorkwxUserId(accessToken, code string) (string, error) {
 	}
 	return data.UserId, nil
 }
+
+//先得理清楚目的
+//使用的登陆方式
+//sms
+//lark
+//WXcode
+//username password

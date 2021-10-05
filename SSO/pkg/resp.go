@@ -14,12 +14,16 @@ type serviceRespnse struct {
 	AuthenticationFailure *authenticationFailure `json:"authenticationFailure,omitempty"`
 }
 
+//
+
 type authenticationSuccess struct {
 	RedirectService *string        `json:"redirectService,omitempty"`
 	UserId          *string        `json:"user,omitempty"`
 	QrcodeSrc       *string        `json:"qrcodeSrc,omitempty"`
 	Attributes      *database.User `json:"attributes,omitempty"`
 }
+
+//
 
 type authenticationFailure struct {
 	Code        string `json:"code"`
@@ -108,3 +112,6 @@ func QrcodeSuccess(imgsrc string) *CommonResponse {
 		},
 	}
 }
+
+
+//将二维码打印在

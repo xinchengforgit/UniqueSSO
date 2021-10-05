@@ -117,20 +117,31 @@ func Logout(ctx *gin.Context) {
 
 }
 
+
+
+//获取wx二维码
+
 func GetWorkWxQRCode(ctx *gin.Context) {
 	apmCtx, span := util.Tracer.Start(ctx.Request.Context(), "GetWorkWxQRCode")
 	defer span.End()
+
 	if conf.SSOConf.Application.Mode == "debug" {
 		src := "https://open.work.weixin.qq.com/wwopen/sso/qrImg?key=2d2287cf9cc95a8"
 		ctx.JSON(http.StatusOK, pkg.QrcodeSuccess(src))
 		return
 	}
-
+	//util.GetQRCodeSrc
 	src, err := util.GetQRCodeSrc()
 	if err != nil {
-		zapx.WithContext(apmCtx).Error("get work wxQRCode failed", zap.Error(err))
+		zapx.WithContext(apmCtx).Error("get work wxQRCode failed", zap.Error(err)) //忽视
 		ctx.JSON(http.StatusInternalServerError, pkg.InternalError(errors.New("获取二维码错误")))
 		return
 	}
 	ctx.JSON(http.StatusOK, pkg.QrcodeSuccess(src))
 }
+
+
+
+//获取lark的AuthCode,直接把
+//
+
