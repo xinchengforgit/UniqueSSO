@@ -60,6 +60,8 @@ type WorkWxConf struct {
 	} `mapstructure:"-"`
 }
 
+//add WorkLarkConf
+
 type WorkLarkConf struct {
 	AppId     string `mapstructure:"app_id"`
 	RedirectUri string `mapstructure:"redirect_uri"`

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 	"time"
@@ -43,6 +44,15 @@ import (
     }
 */
 
+/*
+	use Lark Login with auth_code
+ 	no body
+	use
+	?type=lark&service=xxx
+
+*/
+const LoginUrlFmt = "https://sso.hustunique.com/cas/login?type=%s&service=%s&code=%s"
+
 func Login(ctx *gin.Context) {
 	apmCtx, span := util.Tracer.Start(ctx.Request.Context(), "Login")
 	defer span.End()
@@ -73,13 +83,13 @@ func Login(ctx *gin.Context) {
 	}
 
 	data := new(pkg.LoginUser)
+
 	if err := ctx.ShouldBindJSON(data); err != nil {
 		zapx.WithContext(apmCtx).Error("post body format incorroct", zap.Error(err))
 		ctx.JSON(http.StatusBadRequest, pkg.InvalidRequest(errors.New("上传数据格式错误")))
 		return
 	}
 
-	// validate user
 	user, err := service.VerifyUser(ctx.Request.Context(), data, signType)
 	if err != nil {
 		zapx.WithContext(apmCtx).Error("validate user failed", zap.Error(err))
@@ -107,8 +117,6 @@ func Login(ctx *gin.Context) {
 	query.Set("ticket", ticket)
 	target.RawQuery = query.Encode()
 
-	// append token
-
 	ctx.Redirect(http.StatusFound, target.String())
 }
 
@@ -117,7 +125,67 @@ func Logout(ctx *gin.Context) {
 
 }
 
+//使用Get登陆
 
+func LoginWithGet(ctx *gin.Context) {
+	apmCtx, span := util.Tracer.Start(ctx.Request.Context(), "Login")
+	defer span.End()
+
+	signType, ok := ctx.GetQuery("type")
+	if !ok {
+		zapx.WithContext(apmCtx).Error("sign type unsupported", zap.String("type", signType))
+		ctx.JSON(http.StatusBadRequest, pkg.InvalidRequest(errors.New("unsupported login type: "+signType)))
+		return
+	}
+
+	target := &url.URL{
+		Path: "/",
+	}
+	if redirectUrl, ok := ctx.GetQuery("service"); ok && redirectUrl != "" {
+		if service.VerifyService(redirectUrl) != nil {
+
+			ctx.JSON(http.StatusUnauthorized, pkg.InvalidService(errors.New("unsupported service: "+redirectUrl)))
+			return
+		}
+		ru, err := url.Parse(redirectUrl)
+		if err != nil {
+			zapx.WithContext(apmCtx).Error("failed to parse redirect url", zap.String("service", redirectUrl))
+			ctx.JSON(http.StatusBadRequest, pkg.InvalidRequest(errors.New("service格式错误")))
+			return
+		}
+		target = ru
+	}
+
+	data := ctx.Query("code")
+	user, err := service.VerifyUserWithGet(ctx.Request.Context(), data, signType)
+	if err != nil {
+		zapx.WithContext(apmCtx).Error("validate user failed", zap.Error(err))
+		ctx.JSON(http.StatusUnauthorized, pkg.InvalidTicketSpec(err))
+		return
+	}
+
+	// new ticket, store and set cookie
+	tgt := util.NewTGT()
+	if err := service.StoreValue(ctx.Request.Context(), tgt, user.UID, common.CAS_TGT_EXPIRES); err != nil {
+		zapx.WithContext(apmCtx).Error("store tgt failed", zap.Error(err))
+		ctx.JSON(http.StatusInternalServerError, pkg.InternalError(errors.New("服务器错误，请稍后尝试")))
+		return
+	}
+	ctx.SetCookie(common.CAS_COOKIE_NAME, tgt, int(common.CAS_TGT_EXPIRES/time.Second), "/", ctx.Request.Host, true, true)
+
+	ticket := util.NewTicket()
+	if err := service.StoreValue(ctx.Request.Context(), ticket, user.UID, common.CAS_TICKET_EXPIRES); err != nil {
+		zapx.WithContext(apmCtx).Error("store ticket failed", zap.Error(err))
+		ctx.JSON(http.StatusInternalServerError, pkg.InternalError(errors.New("服务器错误，请稍后尝试")))
+		return
+	}
+
+	query := target.Query()
+	query.Set("ticket", ticket)
+	target.RawQuery = query.Encode()
+
+	ctx.Redirect(http.StatusFound, target.String())
+}
 
 //获取wx二维码
 
@@ -140,8 +208,11 @@ func GetWorkWxQRCode(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, pkg.QrcodeSuccess(src))
 }
 
+//从oauth/callback/中获取code然后redirect 到login上
 
-
-//获取lark的AuthCode,直接把
-//
-
+func GetLarkAuthCode(ctx *gin.Context) {
+	code := ctx.Query("code")
+	service := ctx.Query("state")
+	rdUrl := fmt.Sprintf(LoginUrlFmt, "lark", code, service)
+	ctx.Redirect(http.StatusFound, rdUrl)
+}

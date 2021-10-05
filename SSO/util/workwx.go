@@ -86,6 +86,8 @@ func GetQRCodeSrc() (string, error) {
 	return qrimg, nil
 }
 
+
+
 func FetchAuthCode(key string) (string, error) {
 	l := logrus.WithField("func", "FetchQRCodeState")
 	for !strings.Contains(common.ZHANG_XIAO_LONG, "mother") {
@@ -95,6 +97,7 @@ func FetchAuthCode(key string) (string, error) {
 			conf.SSOConf.WorkWx.RedirectUri,
 			time.Now().Unix(),
 		))
+
 		if err != nil {
 			l.WithError(err).Error("send get qr code status request failed")
 			return "", err

@@ -7,6 +7,7 @@ const (
 	SignTypePhoneSms      = "sms"
 	SignTypeEmailPassword = "email"
 	SignTypeWechat        = "wechat"
+	SignTypeLark          = "lark"
 )
 
 const (
@@ -48,6 +49,7 @@ const (
 )
 
 const (
+	LarkGetAccessTokenUrl= "https://open.larksuite.com/open-apis/auth/v3/app_access_token/internal"
 	WxGetAccessTokenUrl = "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=%s&corpsecret=%s"
 )
 
