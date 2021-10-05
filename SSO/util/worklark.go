@@ -128,7 +128,7 @@ func FetchWorkLarkUserId(token, code string) (string, error) {
 	var responseInfo ResponseInfo
 	err = json.Unmarshal(body, responseInfo)
 	if err != nil {
-		return "", nil
+		return "", err
 	}
 	if responseInfo.UserInfo == nil {
 		return "", errors.New(responseInfo.Message)
