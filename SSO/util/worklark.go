@@ -56,14 +56,6 @@ type ResponseInfo struct {
 	UserInfo   *UserInfo `json:"data,omitempty"` //失败时这一项不存在
 }
 
-//理清楚步骤
-//1.向"https://open.larksuite.com/open-apis/authen/v1/index?redirect_uri=https://sso.hustunique.com/oauth/callback/lark&app_id=cli_a1bf206dffb8d009"
-//发送请求,其中Content-Type=application/json
-//2.从响应中获取auth_code
-//3.向"https://open.larksuite.com/open-apis/auth/v3/app_access_token/internal"发送请求获取token
-//4.将携带token和auth_code来获取用户信息"https://open.larksuite.com/open-apis/authen/v1/access_token"
-//
-
 const (
 	larkWebFmt    = "https://open.larksuite.com/open-apis/auth/v3/app_access_token/internal"                  //获取app_token的网址
 	larkStateFmt  = "https://open.larksuite.com/open-apis/authen/v1/index?redirect_uri=%s&app_id=%s&state=%s" //获取auth_code的网址
