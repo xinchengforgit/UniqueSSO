@@ -11,7 +11,7 @@ import (
 )
 
 func InitRouter(r *gin.Engine) {
-	store := cookie.NewStore([]byte("secret")) //session加密用的字符串
+	store := cookie.NewStore([]byte("secret")) //session加密用的字符串,建议从文件里面读
 	r.Use(middleware.TracingMiddleware())
 	r.Use(middleware.Cors())
 	r.Use(gin.Recovery())

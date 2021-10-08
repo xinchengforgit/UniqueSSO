@@ -13,10 +13,6 @@ func randToken() []byte {
 	return b
 }
 
-func NewTGT() string {
-	return fmt.Sprintf("TGT-%s", random.String(16))
-}
-
 func NewTicket() string {
 	ticket := fmt.Sprintf("ST-%s", random.String(16))
 	return ticket

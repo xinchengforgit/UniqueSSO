@@ -101,7 +101,7 @@ func Login(ctx *gin.Context) {
 			MaxAge: int(common.CAS_TGT_EXPIRES / time.Second),
 		}) //设置session的expire time
 		session.Save()
-	} //颁发session
+	}
 	ticket := util.NewTicket()
 	if err := service.StoreValue(ctx.Request.Context(), ticket, user.UID, common.CAS_TICKET_EXPIRES); err != nil {
 		zapx.WithContext(apmCtx).Error("store ticket failed", zap.Error(err))
@@ -146,17 +146,14 @@ func LoginWithLark(ctx *gin.Context) {
 		return
 	}
 	target = ru
-
-	//session
 	v := session.Get("userId")
 	if v == nil {
 		session.Set("userId", user.UID)
 		session.Options(sessions.Options{
 			MaxAge: int(common.CAS_TGT_EXPIRES / time.Second),
-		}) //设置session的expire time
+		})
 		session.Save()
-	} //颁发session
-	//生成ticket
+	}
 	ticket := util.NewTicket()
 	if err := service.StoreValue(ctx.Request.Context(), ticket, user.UID, common.CAS_TICKET_EXPIRES); err != nil {
 		ctx.JSON(http.StatusInternalServerError, pkg.InternalError(errors.New("服务器错误，请稍后尝试")))
