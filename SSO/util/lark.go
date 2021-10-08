@@ -134,5 +134,6 @@ func FetchWorkLarkUserId(token, code string) (string, error) {
 		return "", errors.New(responseInfo.Message)
 	} //出错的情况
 	return responseInfo.UserInfo.OpenId, nil //不能返回response.UserInfo.UserId 是中文
+	//返回值可以根据需求修改,详情见上面的结构体
 
 }

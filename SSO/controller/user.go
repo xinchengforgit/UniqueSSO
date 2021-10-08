@@ -48,7 +48,7 @@ import (
 func Login(ctx *gin.Context) {
 	apmCtx, span := util.Tracer.Start(ctx.Request.Context(), "Login")
 	defer span.End()
-
+	session := sessions.Default(ctx) //获取session
 	signType, ok := ctx.GetQuery("type")
 	if !ok {
 		zapx.WithContext(apmCtx).Error("sign type unsupported", zap.String("type", signType))
@@ -93,18 +93,15 @@ func Login(ctx *gin.Context) {
 		return
 	}
 
-	//todo
-	// new ticket, store and set cookie and try to use session pack
-	tgt := util.NewTGT() //生成一个tgt然后存进cookie里
-	//这个是存在redis里面了
-	if err := service.StoreValue(ctx.Request.Context(), tgt, user.UID, common.CAS_TGT_EXPIRES); err != nil {
-		zapx.WithContext(apmCtx).Error("store tgt failed", zap.Error(err))
-		ctx.JSON(http.StatusInternalServerError, pkg.InternalError(errors.New("服务器错误，请稍后尝试")))
-		return
-	}
-	//设置一个tgt
-	ctx.SetCookie(common.CAS_COOKIE_NAME, tgt, int(common.CAS_TGT_EXPIRES/time.Second), "/", ctx.Request.Host, true, true)
-
+	//颁发session
+	v := session.Get("userId")
+	if v == nil {
+		session.Set("userId", user.UID)
+		session.Options(sessions.Options{
+			MaxAge: int(common.CAS_TGT_EXPIRES / time.Second),
+		}) //设置session的expire time
+		session.Save()
+	} //颁发session
 	ticket := util.NewTicket()
 	if err := service.StoreValue(ctx.Request.Context(), ticket, user.UID, common.CAS_TICKET_EXPIRES); err != nil {
 		zapx.WithContext(apmCtx).Error("store ticket failed", zap.Error(err))
@@ -171,11 +168,10 @@ func LoginWithLark(ctx *gin.Context) {
 	}
 	target = ru
 
-	var tgt string
-	v := session.Get("tgt")
+	//session
+	v := session.Get("userId")
 	if v == nil {
-		tgt = util.NewTGT()
-		session.Set("tgt", tgt)
+		session.Set("userId", user.UID)
 		session.Options(sessions.Options{
 			MaxAge: int(common.CAS_TGT_EXPIRES / time.Second),
 		}) //设置session的expire time
