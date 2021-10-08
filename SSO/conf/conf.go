@@ -1,14 +1,11 @@
 package conf
 
 import (
-	"net/url"
-	"regexp"
-	"sync"
-
 	"github.com/go-playground/validator/v10"
 	"github.com/spf13/viper"
 	"github.com/xylonx/zapx"
 	"go.uber.org/zap"
+	"regexp"
 )
 
 type Conf struct {
@@ -16,7 +13,6 @@ type Conf struct {
 	Database     DatabaseConf     `mapstructure:"database"`
 	Redis        RedisConf        `mapstructure:"redis"`
 	Sms          []SMSOptions     `mapstructure:"sms"`
-	WorkWx       WorkWxConf       `mapstructure:"work_wx"`
 	OpenPlatform OpenPlatformConf `mapstructure:"openplat_form"`
 	APM          APMConf          `mapstructure:"apm"`
 	Lark         LarkConf         `mapstructure:"work_lark"` //表示lark的
@@ -46,18 +42,6 @@ type SMSOptions struct {
 	Name       string `mapstructure:"name" validator:"oneof='verificationCode'"`
 	TemplateId string `mapstructure:"template_id"`
 	SignName   string `mapstructure:"sign_name"`
-}
-
-type WorkWxConf struct {
-	AppId       string `mapstructure:"app_id"`
-	AgentId     string `mapstructure:"agent_id"`
-	RedirectUri string `mapstructure:"redirect_uri"`
-	CorpId      string `mapstructure:"corpid"`
-	CorpSecret  string `mapstructure:"corpsecret"`
-	AccessToken struct {
-		RWLock sync.RWMutex
-		Token  string
-	} `mapstructure:"-"`
 }
 
 //add Lark Conf
@@ -110,8 +94,6 @@ func InitConf(confFilepath string) error {
 	if SSOConf.Application.Mode == "debug" {
 		zapx.Info("run mode", zap.String("mode", SSOConf.Application.Mode))
 	}
-
-	SSOConf.WorkWx.RedirectUri = url.PathEscape(SSOConf.WorkWx.RedirectUri)
 
 	return nil
 }

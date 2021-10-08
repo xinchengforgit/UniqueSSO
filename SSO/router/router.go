@@ -29,7 +29,4 @@ func InitRouter(r *gin.Engine) {
 	smsrouter := r.Group("/sms")
 	smsrouter.POST("code", controller.SendSmsCode)
 
-	qrrouter := r.Group("/qrcode")
-	qrrouter.GET("code", controller.GetWorkWxQRCode)
-
 }

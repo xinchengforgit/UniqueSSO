@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"github.com/go-redis/redis/v8"
-	"net/url"
 	"unique/jedi/common"
 	"unique/jedi/conf"
 	"unique/jedi/database"
@@ -31,10 +30,6 @@ func VerifyUser(ctx context.Context, login *pkg.LoginUser, signType string) (*da
 		return VerifyUserByPhone(login.Phone, login.Password)
 	case common.SignTypePhoneSms:
 		return VerifyUserBySMS(ctx, login.Phone, login.Code)
-	case common.SignTypeWechat:
-		return VerifyUserByQrcode(login.QrcodeSrc)
-	case common.SignTypeLark:
-		return VerifyUserByLark(login.LarkSrc)
 	default:
 		return nil, errors.New("Invalid sign type")
 	}
@@ -92,37 +87,7 @@ func VerifyUserBySMS(ctx context.Context, phone, sms string) (*database.User, er
 	return user, nil
 }
 
-func VerifyUserByQrcode(qrcode string) (*database.User, error) {
-	src, err := url.Parse(qrcode)
-	if err != nil {
-		return nil, err
-	}
-	code, err := util.FetchAuthCode(src.Query().Get("key"))
-	if err != nil {
-		return nil, err
-	}
-	//这一段逻辑要改一下
-	//首先得获取app_token()
-	//
-	conf.SSOConf.WorkWx.AccessToken.RWLock.RLock()
-	token := conf.SSOConf.WorkWx.AccessToken.Token
-	conf.SSOConf.WorkWx.AccessToken.RWLock.RUnlock()
-	//直接利用token和code来获取userid就好了
-	//ok
-	userid, err := util.FetchWorkwxUserId(token, code)
-	if err != nil {
-		return nil, err
-	}
-
-	user := new(database.User)
-	err = database.DB.Table(user.TableName()).Where("workwx_user_id = ?", userid).Scan(user).Error
-	if err != nil {
-		return nil, err
-	}
-	return user, nil
-}
-
-//由于lark重定向回来到的是redirect_uri的页面可以把code作为参数传入/login,故而larkSrcCode实际上是Authorization_code
+//param: larkSrcCode 是 lark 发来的auth_code
 
 func VerifyUserByLark(larkSrcCode string) (*database.User, error) {
 	//从redis中获取lark_token
