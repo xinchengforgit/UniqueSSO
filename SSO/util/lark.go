@@ -57,9 +57,9 @@ type ResponseInfo struct {
 }
 
 const (
-	larkWebFmt    = "https://open.larksuite.com/open-apis/auth/v3/app_access_token/internal"                  //获取app_token的网址
-	larkStateFmt  = "https://open.larksuite.com/open-apis/authen/v1/index?redirect_uri=%s&app_id=%s&state=%s" //获取auth_code的网址
-	larkUserIdFmt = "https://open.larksuite.com/open-apis/authen/v1/access_token"                             //获取用户信息的网址
+	LarkWebFmt    = "https://open.larksuite.com/open-apis/auth/v3/app_access_token/internal"                  //获取app_token的网址
+	LarkStateFmt  = "https://open.larksuite.com/open-apis/authen/v1/index?redirect_uri=%s&app_id=%s&state=%s" //获取auth_code的网址
+	LarkUserIdFmt = "https://open.larksuite.com/open-apis/authen/v1/access_token"                             //获取用户信息的网址
 )
 
 //获取token并存入redis中
@@ -73,7 +73,7 @@ func GetLarkAppToken(appId, appSecret string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	req, err := http.NewRequest(http.MethodPost, larkWebFmt, bytes.NewBuffer(jsonByte))
+	req, err := http.NewRequest(http.MethodPost, LarkWebFmt, bytes.NewBuffer(jsonByte))
 	if err != nil {
 		return "", err
 	}
@@ -111,7 +111,7 @@ func FetchWorkLarkUserId(token, code string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	req, err := http.NewRequest(http.MethodPost, larkUserIdFmt, bytes.NewBuffer(jsonByte))
+	req, err := http.NewRequest(http.MethodPost, LarkUserIdFmt, bytes.NewBuffer(jsonByte))
 	if err != nil {
 		return "", err
 	}

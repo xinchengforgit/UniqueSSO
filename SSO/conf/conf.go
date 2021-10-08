@@ -19,7 +19,7 @@ type Conf struct {
 	WorkWx       WorkWxConf       `mapstructure:"work_wx"`
 	OpenPlatform OpenPlatformConf `mapstructure:"openplat_form"`
 	APM          APMConf          `mapstructure:"apm"`
-	WorkLark    WorkLarkConf      `mapstructure:"work_lark"` //表示lark的
+	Lark         LarkConf         `mapstructure:"work_lark"` //表示lark的
 }
 type ApplicationConf struct {
 	Host            string           `mapstructure:"host"`
@@ -60,14 +60,13 @@ type WorkWxConf struct {
 	} `mapstructure:"-"`
 }
 
-//add WorkLarkConf
+//add Lark Conf
 
-type WorkLarkConf struct {
-	AppId     string `mapstructure:"app_id"`
+type LarkConf struct {
+	AppId       string `mapstructure:"app_id"`
 	RedirectUri string `mapstructure:"redirect_uri"`
-	AppSecret string `mapstructure:"app_secret"`
+	AppSecret   string `mapstructure:"app_secret"`
 }
-
 
 type OpenPlatformConf struct {
 	GrpcAddr       string `mapstructure:"grpc_addr"`
@@ -82,7 +81,6 @@ type APMConf struct {
 var (
 	SSOConf = &Conf{}
 )
-
 
 func InitConf(confFilepath string) error {
 	viper.SetConfigFile(confFilepath)

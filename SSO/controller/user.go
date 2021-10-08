@@ -12,6 +12,7 @@ import (
 	"unique/jedi/service"
 	"unique/jedi/util"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/xylonx/zapx"
 	"go.uber.org/zap"
@@ -44,15 +45,6 @@ import (
     }
 */
 
-/*
-	use Lark Login with auth_code
- 	no body
-	use
-	?type=lark&service=xxx
-
-*/
-const LoginUrlFmt = "https://sso.hustunique.com/cas/login?type=%s&service=%s&code=%s"
-
 func Login(ctx *gin.Context) {
 	apmCtx, span := util.Tracer.Start(ctx.Request.Context(), "Login")
 	defer span.End()
@@ -81,7 +73,11 @@ func Login(ctx *gin.Context) {
 		}
 		target = ru
 	}
-
+	//添加lark的独立判断
+	if signType == common.SignTypeLark {
+		LarkOauthUrl := fmt.Sprintf(util.LarkStateFmt, conf.SSOConf.Lark.RedirectUri, conf.SSOConf.Lark.AppId, ctx.Query("service"))
+		ctx.Redirect(http.StatusFound, LarkOauthUrl)
+	}
 	data := new(pkg.LoginUser)
 
 	if err := ctx.ShouldBindJSON(data); err != nil {
@@ -97,13 +93,16 @@ func Login(ctx *gin.Context) {
 		return
 	}
 
-	// new ticket, store and set cookie
-	tgt := util.NewTGT()
+	//todo
+	// new ticket, store and set cookie and try to use session pack
+	tgt := util.NewTGT() //生成一个tgt然后存进cookie里
+	//这个是存在redis里面了
 	if err := service.StoreValue(ctx.Request.Context(), tgt, user.UID, common.CAS_TGT_EXPIRES); err != nil {
 		zapx.WithContext(apmCtx).Error("store tgt failed", zap.Error(err))
 		ctx.JSON(http.StatusInternalServerError, pkg.InternalError(errors.New("服务器错误，请稍后尝试")))
 		return
 	}
+	//设置一个tgt
 	ctx.SetCookie(common.CAS_COOKIE_NAME, tgt, int(common.CAS_TGT_EXPIRES/time.Second), "/", ctx.Request.Host, true, true)
 
 	ticket := util.NewTicket()
@@ -123,68 +122,6 @@ func Login(ctx *gin.Context) {
 // TODO: construct a watcher to implement logout function
 func Logout(ctx *gin.Context) {
 
-}
-
-//使用Get登陆
-
-func LoginWithGet(ctx *gin.Context) {
-	apmCtx, span := util.Tracer.Start(ctx.Request.Context(), "Login")
-	defer span.End()
-
-	signType, ok := ctx.GetQuery("type")
-	if !ok {
-		zapx.WithContext(apmCtx).Error("sign type unsupported", zap.String("type", signType))
-		ctx.JSON(http.StatusBadRequest, pkg.InvalidRequest(errors.New("unsupported login type: "+signType)))
-		return
-	}
-
-	target := &url.URL{
-		Path: "/",
-	}
-	if redirectUrl, ok := ctx.GetQuery("service"); ok && redirectUrl != "" {
-		if service.VerifyService(redirectUrl) != nil {
-
-			ctx.JSON(http.StatusUnauthorized, pkg.InvalidService(errors.New("unsupported service: "+redirectUrl)))
-			return
-		}
-		ru, err := url.Parse(redirectUrl)
-		if err != nil {
-			zapx.WithContext(apmCtx).Error("failed to parse redirect url", zap.String("service", redirectUrl))
-			ctx.JSON(http.StatusBadRequest, pkg.InvalidRequest(errors.New("service格式错误")))
-			return
-		}
-		target = ru
-	}
-
-	data := ctx.Query("code")
-	user, err := service.VerifyUserWithGet(ctx.Request.Context(), data, signType)
-	if err != nil {
-		zapx.WithContext(apmCtx).Error("validate user failed", zap.Error(err))
-		ctx.JSON(http.StatusUnauthorized, pkg.InvalidTicketSpec(err))
-		return
-	}
-
-	// new ticket, store and set cookie
-	tgt := util.NewTGT()
-	if err := service.StoreValue(ctx.Request.Context(), tgt, user.UID, common.CAS_TGT_EXPIRES); err != nil {
-		zapx.WithContext(apmCtx).Error("store tgt failed", zap.Error(err))
-		ctx.JSON(http.StatusInternalServerError, pkg.InternalError(errors.New("服务器错误，请稍后尝试")))
-		return
-	}
-	ctx.SetCookie(common.CAS_COOKIE_NAME, tgt, int(common.CAS_TGT_EXPIRES/time.Second), "/", ctx.Request.Host, true, true)
-
-	ticket := util.NewTicket()
-	if err := service.StoreValue(ctx.Request.Context(), ticket, user.UID, common.CAS_TICKET_EXPIRES); err != nil {
-		zapx.WithContext(apmCtx).Error("store ticket failed", zap.Error(err))
-		ctx.JSON(http.StatusInternalServerError, pkg.InternalError(errors.New("服务器错误，请稍后尝试")))
-		return
-	}
-
-	query := target.Query()
-	query.Set("ticket", ticket)
-	target.RawQuery = query.Encode()
-
-	ctx.Redirect(http.StatusFound, target.String())
 }
 
 //获取wx二维码
@@ -208,11 +145,51 @@ func GetWorkWxQRCode(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, pkg.QrcodeSuccess(src))
 }
 
-//从oauth/callback/中获取code然后redirect 到login上
+//返回code和service
 
-func GetLarkAuthCode(ctx *gin.Context) {
+func GetLarkAuthCode(ctx *gin.Context) (string, string) {
 	code := ctx.Query("code")
 	service := ctx.Query("state")
-	rdUrl := fmt.Sprintf(LoginUrlFmt, "lark", code, service)
-	ctx.Redirect(http.StatusFound, rdUrl)
+	return code, service
+}
+
+func LoginWithLark(ctx *gin.Context) {
+	session := sessions.Default(ctx)
+	authCode, serviceStr := GetLarkAuthCode(ctx)
+	user, err := service.VerifyUserByLark(authCode)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, pkg.InternalError(err))
+		return
+	}
+	target := &url.URL{
+		Path: "/",
+	}
+	ru, err := url.Parse(serviceStr)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, pkg.InternalError(err))
+		return
+	}
+	target = ru
+
+	var tgt string
+	v := session.Get("tgt")
+	if v == nil {
+		tgt = util.NewTGT()
+		session.Set("tgt", tgt)
+		session.Options(sessions.Options{
+			MaxAge: int(common.CAS_TGT_EXPIRES / time.Second),
+		}) //设置session的expire time
+		session.Save()
+	} //颁发session
+	//生成ticket
+	ticket := util.NewTicket()
+	if err := service.StoreValue(ctx.Request.Context(), ticket, user.UID, common.CAS_TICKET_EXPIRES); err != nil {
+		ctx.JSON(http.StatusInternalServerError, pkg.InternalError(errors.New("服务器错误，请稍后尝试")))
+		return
+	}
+	query := target.Query()
+	query.Set("ticket", ticket)
+	target.RawQuery = query.Encode()
+
+	ctx.Redirect(http.StatusFound, target.String())
 }

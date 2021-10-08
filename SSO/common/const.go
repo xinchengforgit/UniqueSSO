@@ -49,8 +49,9 @@ const (
 )
 
 const (
-	LarkGetAccessTokenUrl= "https://open.larksuite.com/open-apis/auth/v3/app_access_token/internal"
-	WxGetAccessTokenUrl = "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=%s&corpsecret=%s"
+	LarkGetAccessTokenUrl = "https://open.larksuite.com/open-apis/auth/v3/app_access_token/internal"
+	WxGetAccessTokenUrl   = "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=%s&corpsecret=%s"
+	LoginUrlFmt           = "https://sso.hustunique.com/cas/login?type=%s&service=%s&code=%s"
 )
 
 type UserRole int

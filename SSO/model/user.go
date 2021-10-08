@@ -14,6 +14,7 @@ type User struct {
 	DeleteAt gorm.DeletedAt `json:"-"`
 
 	UID          string          `json:"uid" gorm:"column:uid;primaryKey"`
+	LarkUserId   string          `json:"-" gorm:"column:Lark_user_id;index"`
 	WorkwxUserId string          `json:"-" gorm:"column:workwx_user_id;index"`
 	Name         string          `json:"name" gorm:"column:name"`
 	Phone        string          `json:"phone" gorm:"column:phone;index"`

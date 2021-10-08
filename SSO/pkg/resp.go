@@ -112,6 +112,3 @@ func QrcodeSuccess(imgsrc string) *CommonResponse {
 		},
 	}
 }
-
-
-//将二维码打印在

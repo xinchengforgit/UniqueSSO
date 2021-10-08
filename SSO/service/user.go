@@ -129,7 +129,7 @@ func VerifyUserByLark(larkSrcCode string) (*database.User, error) {
 	token, err := database.RedisClient.Get(context.Background(), "lark_token").Result()
 	if err == redis.Nil {
 		//重新获取token并设置
-		token, err = util.GetLarkAppToken(conf.SSOConf.WorkLark.AppId, conf.SSOConf.WorkLark.AppSecret)
+		token, err = util.GetLarkAppToken(conf.SSOConf.Lark.AppId, conf.SSOConf.Lark.AppSecret)
 		if err != nil {
 			return nil, err
 		}
